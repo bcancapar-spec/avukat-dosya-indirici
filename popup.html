@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <title>UYAP Evrak Indirici</title>
+  <style>
+    body { font-family: "Segoe UI", Tahoma, sans-serif; width: 440px; margin: 0; padding: 10px; background: #ffffff; color: #111827; }
+    h1 { font-size: 14px; margin: 0 0 8px 0; }
+    .hint { font-size: 11px; color: #6b7280; margin-bottom: 8px; }
+    button { padding: 7px 10px; font-size: 12px; cursor: pointer; color: #fff; border: none; border-radius: 5px; font-weight: 600; }
+    button:disabled { background: #94a3b8 !important; cursor: not-allowed; }
+    .row-btns { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+    .row-btns button { flex: 1; min-width: 110px; }
+    button#listBtn { background: #6366f1; }
+    button#listBtn:hover:not(:disabled) { background: #4f46e5; }
+    button#resumeBtn { background: #f59e0b; }
+    button#resumeBtn:hover:not(:disabled) { background: #d97706; }
+    button#cancelResumeBtn { background: #6b7280; padding: 5px 8px; font-size: 11px; }
+    button#individualBtn { background: #2563eb; }
+    button#individualBtn:hover:not(:disabled) { background: #1d4ed8; }
+    button#mergedBtn { background: #059669; }
+    button#mergedBtn:hover:not(:disabled) { background: #047857; }
+    button#stopBtn { background: #dc2626; width: 100%; padding: 8px; font-size: 12px; }
+    button#stopBtn:hover:not(:disabled) { background: #b91c1c; }
+    .stop-row { display: none; margin-top: 8px; }
+    .stop-row.show { display: block; }
+    .resume-banner { background: #fff7ed; border: 1px solid #fcd34d; padding: 8px; border-radius: 5px; margin-bottom: 8px; font-size: 11px; color: #92400e; display: none; }
+    .resume-banner.show { display: block; }
+    .resume-banner .resume-info { margin-bottom: 6px; }
+    .resume-banner .resume-actions { display: flex; gap: 6px; }
+    .case-info { background: #f3f4f6; padding: 6px 8px; border-radius: 4px; margin-bottom: 8px; font-size: 11px; display: none; }
+    .case-info.show { display: block; }
+    .case-info b { color: #1f2937; }
+    .filter-box { display: none; margin-bottom: 8px; }
+    .filter-box.show { display: block; }
+    .select-actions { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; font-size: 11px; }
+    .select-actions button { background: #e5e7eb; color: #111827; padding: 4px 8px; font-size: 11px; font-weight: 500; }
+    .select-actions button:hover { background: #d1d5db; }
+    .select-actions .count { margin-left: auto; color: #6b7280; }
+    .filter-search { flex: 1; padding: 4px 6px; font-size: 11px; border: 1px solid #d1d5db; border-radius: 4px; }
+    .range-row { display: flex; gap: 4px; align-items: center; padding: 4px 0 6px 0; font-size: 11px; color: #374151; flex-wrap: wrap; }
+    .range-row .range-lbl { color: #4b5563; font-weight: 600; }
+    .range-row .range-input { width: 56px; padding: 2px 4px; font-size: 11px; border: 1px solid #d1d5db; border-radius: 3px; text-align: center; }
+    .range-row .range-sep { color: #9ca3af; }
+    .range-row .range-hint { color: #9ca3af; font-size: 10px; margin-left: auto; }
+    .evrak-list { max-height: 220px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 4px; background: #fafafa; }
+    .folder-group { border-bottom: 1px solid #e5e7eb; }
+    .folder-group:last-child { border-bottom: 0; }
+    .folder-header { display: flex; align-items: center; gap: 6px; padding: 5px 8px; background: #eef2ff; border-bottom: 1px solid #c7d2fe; position: sticky; top: 0; z-index: 1; font-size: 11px; }
+    .folder-header input[type="checkbox"] { flex-shrink: 0; cursor: pointer; }
+    .folder-header .folder-name { color: #1e3a8a; font-weight: 600; flex: 1; cursor: pointer; word-break: break-word; }
+    .folder-header .folder-count { color: #4f46e5; font-family: Consolas, monospace; font-size: 10px; flex-shrink: 0; }
+    .evrak-item { display: flex; align-items: flex-start; padding: 4px 8px; border-bottom: 1px solid #f1f5f9; font-size: 11px; gap: 6px; }
+    .folder-group .evrak-item:last-child { border-bottom: 0; }
+    .evrak-item input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; }
+    .evrak-item label { flex: 1; cursor: pointer; line-height: 1.35; word-break: break-word; }
+    .evrak-item .ev-name { color: #1f2937; }
+    .evrak-item .ev-date { color: #6b7280; font-family: Consolas, monospace; margin-left: 4px; font-size: 10px; }
+    .evrak-item .ev-noid { color: #dc2626; font-size: 10px; font-style: italic; margin-left: 4px; }
+    .evrak-item .ev-ek-prefix { color: #9ca3af; margin-right: 2px; }
+    .evrak-item .ev-ek-tag { color: #7c3aed; background: #ede9fe; padding: 0 4px; border-radius: 3px; font-size: 9px; font-weight: 600; margin-right: 2px; }
+    .evrak-item.ev-ek { padding-left: 22px; background: #fafbff; border-left: 2px solid #c4b5fd; }
+    .progress { background: #e5e7eb; height: 8px; border-radius: 4px; margin-top: 8px; overflow: hidden; display: none; }
+    .progress.show { display: block; }
+    .progress > div { background: #2563eb; height: 100%; width: 0%; transition: width 0.2s ease; }
+    #counters { font-size: 11px; color: #374151; margin-top: 6px; display: none; justify-content: space-between; }
+    #counters.show { display: flex; }
+    #status { margin-top: 8px; font-size: 11px; max-height: 200px; overflow-y: auto; border: 1px solid #e5e7eb; padding: 6px 8px; border-radius: 4px; background: #f9fafb; font-family: Consolas, "Courier New", monospace; display: none; }
+    #status.show { display: block; }
+    .row { margin: 2px 0; line-height: 1.4; word-break: break-all; }
+    .ok { color: #059669; }
+    .fail { color: #dc2626; }
+    .info { color: #1f2937; }
+    .muted { color: #6b7280; }
+    .mode-merged .progress > div { background: #059669; }
+  </style>
+</head>
+<body>
+  <h1>UYAP Evrak Indirici</h1>
+  <div class="hint">Dosya sayfasinda once <b>Listele</b>'ye basin, secim yapip indirme modunu secin.</div>
+
+  <div id="resumeBanner" class="resume-banner">
+    <div class="resume-info" id="resumeInfo"></div>
+    <div class="resume-actions">
+      <button id="resumeBtn">Devam Et</button>
+      <button id="cancelResumeBtn">Iptal Et</button>
+    </div>
+  </div>
+
+  <div class="row-btns">
+    <button id="listBtn">Listele</button>
+    <button id="individualBtn" disabled>Tek Tek Indir</button>
+    <button id="mergedBtn" disabled>Toplu PDF Indir</button>
+  </div>
+
+  <div id="caseInfo" class="case-info"></div>
+
+  <div id="filterBox" class="filter-box">
+    <div class="select-actions">
+      <button id="selectAllBtn">Tumunu Sec</button>
+      <button id="selectNoneBtn">Hicbirini Secme</button>
+      <input id="filterSearch" class="filter-search" type="text" placeholder="Ara (isim/tarih)..." />
+      <span class="count"><b id="selCount">0</b>/<b id="totCount">0</b></span>
+    </div>
+    <div class="range-row">
+      <span class="range-lbl">Tek Tek Indir araligi:</span>
+      <input id="rangeStart" class="range-input" type="number" min="1" placeholder="bas" />
+      <span class="range-sep">-</span>
+      <input id="rangeEnd" class="range-input" type="number" min="1" placeholder="bit" />
+      <span class="range-hint">(bos = tum secim; sadece Tek Tek)</span>
+    </div>
+    <div id="evrakList" class="evrak-list"></div>
+  </div>
+
+  <div id="stopBtnRow" class="stop-row">
+    <button id="stopBtn">Durdur</button>
+  </div>
+
+  <div class="progress"><div id="bar"></div></div>
+  <div id="counters">
+    <span><span id="cur">0</span> / <span id="tot">0</span></span>
+    <span><span class="ok" id="okC">0</span> / <span class="fail" id="failC">0</span></span>
+  </div>
+
+  <div id="status">Hazir.</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
