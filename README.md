@@ -1,6 +1,6 @@
 # Avukat Dosya İndirici
 
-UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve filtreli şekilde lokal olarak indiren Chrome uzantısı.
+UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve filtreli şekilde lokal olarak indiren Chrome uzantısıdır. 05/07/2026 tarihinde yayına alınmıştır. Geliştirilmeye devam etmektedir. İş yükü azaltmakta, vekaletiniz olan dava dosyalarınızın bir fotokopisini fiziken almak yerine sisteminize kaydetmenize ve üzerinde çalışmanıza imkan sağlamaktadır. 
 
 ## Özellikler
 
@@ -10,6 +10,7 @@ UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve 
 - Kesintiye uğrayan indirme işlemlerine kaldığı yerden devam edebilir
 - İndirme sırasında oluşabilecek hatalar için rapor sunar
 - Tüm veriler yalnızca kendi bilgisayarınıza iner; hiçbir üçüncü taraf sunucuya veri gönderilmez
+- İndirilemeyen evrakların listesini sunar (İlk testlere göre yalnızca vekalet pulu makbuzları indirilememektedir.Bu evraüın barolar birliğinden temin edilen bağımsız bir evrak olduğu tahmin edilmektedir)
 
 ## Gereksinimler
 
@@ -45,17 +46,20 @@ Bu uzantı şu an Chrome Web Mağazası'nda yayınlanmamıştır; "paketlenmemi�
 ## Kullanım
 
 1. [avukat.uyap.gov.tr](https://avukat.uyap.gov.tr) adresine gidip kendi hesabınızla giriş yapın
-2. Vekaletiniz bulunan bir dosyanın evrak listesi sayfasına gidin
-3. Chrome araç çubuğunda uzantı ikonuna tıklayarak açılan pencereden indirme işlemini başlatın
+2. Vekaletiniz bulunan bir dosyaya bağlanın,  evrak sekmesine tıklayın ardından
+4. Chrome araç/eklenti  çubuğunda uzantı ikonuna tıklayarak açılan pencereden indirme işlemini başlatın
+5. program bilgisayarınızın indirilenler klasöründe uyap-evraklar klasörü oluşturacak ve indirdiğiniz davanızın alt klasörünü künyeli olarak oluşturacaktır.
+6. Künyeli oluşturulan dava dosyanızda en eskiden en yeniye davadaki tüm evraklar numaralandırılarak yüklenecektir.
+7. Evraklar bu sürüm itibariyle udf. formatında değil, pdf vd. formatlarda kayıpsız olarak indirilecektir. (ancak indirilen evrakları manuel olarak kontrol etmeyi unutmayınız)
 
 ## Sorun Bildirimi
 
-Herhangi bir hata veya beklenmeyen davranışla karşılaşırsanız, bu depoda bir "Issue" açarak bildirebilirsiniz. Mümkünse şu bilgileri ekleyin:
+Herhangi bir hata veya beklenmeyen davranışla karşılaşırsanız, bu depoda bir "Issue" açarak veya b.cancapar@gmail.com adresine doğrudan bildirebilirsiniz. Mümkünse şu bilgileri ekleyin:
 - Ne yapmaya çalışıyordunuz
 - Ne beklediniz
 - Ne oldu (varsa hata mesajı veya ekran görüntüsü)
 
 ## Lisans ve Sorumluluk Reddi
 
-Bu araç, resmi bir UYAP ürünü değildir; bağımsız olarak geliştirilmiş, kullanıcıların kendi vekaletleri dahilindeki evrakları indirme işlemini kolaylaştırmayı amaçlayan bir yardımcı araçtır. Kullanımı kullanıcının kendi sorumluluğundadır.
+Bu araç, resmi bir UYAP ürünü değildir; bağımsız olarak geliştirilmiş, kullanıcıların kendi avukatlık genel ve özel vekaletleri dahilindeki yasal yetkisi olan evrakları görme ve indirme işlemini kolaylaştırmayı amaçlayan bir yardımcı araçtır. Kullanımı kullanıcının kendi sorumluluğundadır.
 Av.Bayram Can ÇAPAR tarafından kodlanmıştır. 
