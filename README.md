@@ -1,6 +1,6 @@
 # Avukat Dosya İndirici
 
-UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve filtreli şekilde lokal olarak indiren Chrome uzantısıdır. 05/07/2026 tarihinde yayına alınmıştır. Geliştirilmeye devam etmektedir. İş yükü azaltmakta, vekaletiniz olan dava dosyalarınızın bir fotokopisini fiziken almak yerine sisteminize kaydetmenize ve üzerinde çalışmanıza imkan sağlamaktadır. 
+UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve filtreli şekilde lokal olarak indiren Chrome uzantısıdır. 05/07/2026 tarihinde yayına alınmıştır. Geliştirilmeye devam etmektedir. İş yükü azaltmakta, vekaletiniz olan dava dosyalarınızın bir fotokopisini fiziken almak yerine sisteminize kaydetmenize ve üzerinde çalışmanıza imkan sağlamayı amaçlamaktadır. 
 
 ## Özellikler
 
