@@ -3,14 +3,14 @@
 UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve filtreli şekilde lokal olarak indiren Chrome uzantısıdır. 05/07/2026 tarihinde yayına alınmıştır. Geliştirilmeye devam etmektedir. İş yükü azaltmakta, vekaletiniz olan dava dosyalarınızın bir fotokopisini fiziken almak yerine sisteminize kaydetmenize ve üzerinde çalışmanıza imkan sağlamayı amaçlamaktadır. 
 
 ## Özellikler
-
+- Kullanım Ücretsizdir. Hak arama hürriyetinin vücut bulmuş hali olan tüm avukatlara adanmıştır. 
 - UYAP avukat portalında avukatlık kanunun verdiği yetkiye dayanarak vekili/müdafisi/temsilcisi olduğunuz (`avukat.uyap.gov.tr`) vekaletiniz bulunan dosyalardaki evrakları tespit eder
 - Evrakları toplu (birden fazla dosyayı tek seferde) indirir
 - Filtreleme desteği ile yalnızca istediğiniz evrak türlerini seçebilirsiniz
 - Kesintiye uğrayan indirme işlemlerine kaldığı yerden devam edebilir
 - İndirme sırasında oluşabilecek hatalar için rapor sunar
 - Tüm veriler yalnızca kendi bilgisayarınıza iner; hiçbir üçüncü taraf sunucuya veri gönderilmez
-- İndirilemeyen evrakların listesini sunar (İlk testlere göre yalnızca vekalet pulu makbuzları indirilememektedir.Bu evrakın barolar birliğinden temin edilen bağımsız bir evrak olduğu tahmin edilmektedir)
+- İndirilemeyen evrakların listesini sunar. Bu da manuel farkındalık için kullanıcıya kolaylık sağlar. (İlk testlere göre yalnızca vekalet pulu makbuzları indirilememektedir.Bu evrakın barolar birliğinden temin edilen bağımsız bir evrak olduğu tahmin edilmektedir)
 
 ## Gereksinimler
 
