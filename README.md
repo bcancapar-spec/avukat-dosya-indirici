@@ -39,7 +39,7 @@ Bu uzantı şu an Chrome Web Mağazası'nda yayınlanmamıştır; "paketlenmemi�
 
 5. Sol üstte beliren **"Paketlenmemiş öğe yükle"** (Load unpacked) butonuna tıklayın
 
-6. 1. adımda çıkardığınız klasörü seçin
+6. Bu repoyu indirdiğiniz ve zip/rar dosyasını çıkardığınız klasörü seçin ve onaylayın
 
 7. Uzantı listeye eklenecektir. Chrome araç çubuğundaki uzantılar (yapboz parçası) ikonuna tıklayıp uzantıyı sabitleyebilirsiniz
 
