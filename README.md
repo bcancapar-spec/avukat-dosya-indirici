@@ -61,5 +61,5 @@ Herhangi bir hata veya beklenmeyen davranışla karşılaşırsanız, bu depoda 
 
 ## Lisans ve Sorumluluk Reddi
 
-Bu araç, resmi bir UYAP ürünü değildir; bağımsız olarak geliştirilmiş, kullanıcıların kendi avukatlık genel ve özel vekaletleri dahilindeki yasal yetkisi olan evrakları görme ve indirme işlemini kolaylaştırmayı amaçlayan ticari amacı olmayan açık kaynak kodlu bir yardımcı araçtır. Kullanımı kullanıcının kendi sorumluluğundadır.
-Av.Bayram Can ÇAPAR tarafından kodlanmıştır. Fikri Mülkiyet tarafımıza aittir. 5846 sayılı Fikir ve Sanat Eserleri Kanunu kapsamında işlemler için repodaki Lisans belgesine bakınız.  
+Bu araç, resmi bir UYAP ürünü değildir; bağımsız olarak geliştirilmiş, kullanıcıların kendi avukatlık genel ve özel vekaletleri dahilindeki yasal yetkisi olan evrakları görme ve indirme işlemini kolaylaştırmayı amaçlayan ticari amacı olmayan açık kaynak kodlu bir yardımcı araçtır.Hiçbir veri üçüncü tarafla paylaşılmamakta ve kod dizaynı buna kullanıcı izin vermediği sürece izin vermemektedir. Eklentinin Kullanımı kullanıcının kendi sorumluluğundadır.Kullanıcı işbu eklentiyi kullanmakla tüm sorumluluğu açıkça kabul etmiştir. 
+Av.Bayram Can ÇAPAR tarafından fikir üretilerek özgün biçimde kodlanmıştır. Fikri Mülkiyet tarafımıza aittir. 5846 sayılı Fikir ve Sanat Eserleri Kanunu kapsamında işlemler için repodaki Lisans belgesine bakınız.  
