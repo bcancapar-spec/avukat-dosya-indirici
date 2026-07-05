@@ -19,7 +19,7 @@ UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve 
 
 ## Kurulum
 
-Bu uzantı şu an Chrome Web Mağazası'nda yayınlanmamıştır; "paketlenmemiş öğe" (unpacked extension) olarak manuel kurulum gerektirir.
+Bu uzantı şu an Chrome Web Mağazası'nda yayınlanmamıştır; Geliştirme aşamasındadır. "paketlenmemiş öğe" (unpacked extension) olarak manuel kurulum gerektirir. Kaynak kodlar denetime açık olup işbu repoda açıkça yayınlanmıştır. 
 
 ### Adım Adım Kurulum
 
