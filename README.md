@@ -54,7 +54,7 @@ Bu uzantı şu an Chrome Web Mağazası'nda yayınlanmamıştır; Geliştirme a�
 
 ## Sorun Bildirimi
 
-Herhangi bir hata veya beklenmeyen davranışla karşılaşırsanız, bu depoda bir "Issue" açarak veya b.cancapar@gmail.com adresine doğrudan bildirebilirsiniz. Mümkünse şu bilgileri ekleyin:
+Herhangi bir hata veya beklenmeyen davranışla karşılaşırsanız, bu depoda bir "Issue" açarak veya b.cancapar@gmail.com adresine doğrudan ulaşarak bildirebilirsiniz. Mümkünse şu bilgileri ekleyin:
 - Ne yapmaya çalışıyordunuz
 - Ne beklediniz
 - Ne oldu (varsa hata mesajı veya ekran görüntüsü)
