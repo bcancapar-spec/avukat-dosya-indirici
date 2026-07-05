@@ -4,7 +4,7 @@ UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve 
 
 ## Özellikler
 
-- UYAP avukat portalında (`avukat.uyap.gov.tr`) vekaletiniz bulunan dosyalardaki evrakları tespit eder
+- UYAP avukat portalında avukatlık kanunun verdiği yetkiye dayanarak vekili/müdafisi/temsilcisi olduğunuz (`avukat.uyap.gov.tr`) vekaletiniz bulunan dosyalardaki evrakları tespit eder
 - Evrakları toplu (birden fazla dosyayı tek seferde) indirir
 - Filtreleme desteği ile yalnızca istediğiniz evrak türlerini seçebilirsiniz
 - Kesintiye uğrayan indirme işlemlerine kaldığı yerden devam edebilir
