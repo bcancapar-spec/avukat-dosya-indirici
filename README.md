@@ -10,7 +10,7 @@ UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve 
 - Kesintiye uğrayan indirme işlemlerine kaldığı yerden devam edebilir
 - İndirme sırasında oluşabilecek hatalar için rapor sunar
 - Tüm veriler yalnızca kendi bilgisayarınıza iner; hiçbir üçüncü taraf sunucuya veri gönderilmez
-- İndirilemeyen evrakların listesini sunar (İlk testlere göre yalnızca vekalet pulu makbuzları indirilememektedir.Bu evraüın barolar birliğinden temin edilen bağımsız bir evrak olduğu tahmin edilmektedir)
+- İndirilemeyen evrakların listesini sunar (İlk testlere göre yalnızca vekalet pulu makbuzları indirilememektedir.Bu evrakın barolar birliğinden temin edilen bağımsız bir evrak olduğu tahmin edilmektedir)
 
 ## Gereksinimler
 
