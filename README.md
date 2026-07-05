@@ -58,3 +58,4 @@ Herhangi bir hata veya beklenmeyen davranışla karşılaşırsanız, bu depoda 
 ## Lisans ve Sorumluluk Reddi
 
 Bu araç, resmi bir UYAP ürünü değildir; bağımsız olarak geliştirilmiş, kullanıcıların kendi vekaletleri dahilindeki evrakları indirme işlemini kolaylaştırmayı amaçlayan bir yardımcı araçtır. Kullanımı kullanıcının kendi sorumluluğundadır.
+Av.Bayram Can ÇAPAR tarafından kodlanmıştır. 
