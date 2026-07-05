@@ -49,7 +49,7 @@ Bu uzantı şu an Chrome Web Mağazası'nda yayınlanmamıştır; Geliştirme a�
 2. Vekaletiniz bulunan bir dosyaya bağlanın,  evrak sekmesine tıklayın ardından
 4. Chrome araç/eklenti  çubuğunda uzantı ikonuna tıklayarak açılan pencereden indirme işlemini başlatın
 5. program bilgisayarınızın indirilenler klasöründe uyap-evraklar klasörü oluşturacak ve indirdiğiniz davanızın alt klasörünü künyeli olarak oluşturacaktır.
-6. Künyeli oluşturulan dava dosyanızda en eskiden en yeniye davadaki tüm evraklar numaralandırılarak yüklenecektir.
+6. Künyeli oluşturulan dava dosyanızda/icra dosyanızda en eskiden en yeniye davadaki tüm evraklar numaralandırılarak yüklenecektir.
 7. Evraklar bu sürüm itibariyle udf. formatında değil, pdf vd. formatlarda kayıpsız olarak indirilecektir. (ancak indirilen evrakları manuel olarak kontrol etmeyi unutmayınız)
 
 ## Sorun Bildirimi
