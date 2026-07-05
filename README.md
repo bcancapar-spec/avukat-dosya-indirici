@@ -4,7 +4,7 @@ UYAP avukat portalındaki vekaletinizin bulunduğu dosya evraklarını toplu ve 
 
 ## Özellikler
 - Kullanım Ücretsizdir. Hak arama hürriyetinin vücut bulmuş hali olan tüm avukatlara adanmıştır. 
-- UYAP avukat portalında avukatlık kanunun verdiği yetkiye dayanarak vekili/müdafisi/temsilcisi olduğunuz (`avukat.uyap.gov.tr`) vekaletiniz bulunan dosyalardaki evrakları tespit eder
+- UYAP avukat portalında avukatlık kanunun verdiği yetkiye dayanarak vekili/müdafisi/temsilcisi olduğunuz (`avukat.uyap.gov.tr`) vekaletiniz bulunan dosyalardaki evrakları şahsi onayınızla ve kendi log kaydınızla tespit eder
 - Evrakları toplu (birden fazla dosyayı tek seferde) veya tek tek indirir
 - Filtreleme desteği ile yalnızca istediğiniz evrak türlerini seçebilirsiniz
 - Kesintiye uğrayan indirme işlemlerine kaldığı yerden devam edebilir
