@@ -292,8 +292,13 @@ function updateSelectionCount() {
 // === LISTELE ===
 async function getActiveTab() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab || !tab.url || !tab.url.startsWith("https://avukat.uyap.gov.tr/")) {
-    throw new Error("Aktif sekme UYAP avukat portali degil. Once avukat.uyap.gov.tr adresine gidin.");
+  const DESTEKLI_PORTALLAR = [
+    "https://avukat.uyap.gov.tr/",
+    "https://vatandas.uyap.gov.tr/"
+  ];
+  const portalDestekli = !!(tab && tab.url && DESTEKLI_PORTALLAR.some((o) => tab.url.startsWith(o)));
+  if (!portalDestekli) {
+    throw new Error("Aktif sekme UYAP portali degil. Once avukat.uyap.gov.tr veya vatandas.uyap.gov.tr adresine gidin.");
   }
   return tab;
 }

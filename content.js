@@ -95,6 +95,7 @@
           reqId,
           evrakId: rec.evrakId,
           dosyaId: rec.dosyaId,
+          yargiTuru: rec.yargiTuru,   // vatandas portali icin zorunlu
           timeoutMs
         }, "*");
       } catch (e) {
@@ -269,7 +270,7 @@
           });
 
           try {
-            const rec = { evrakId: it.evrakId, dosyaId: it.dosyaId };
+            const rec = { evrakId: it.evrakId, dosyaId: it.dosyaId, yargiTuru: it.yargiTuru };
             const r = await fetchEvrakAsBase64(rec, FETCH_TIMEOUT_MS);
             if (r.ok) { result = r; break; }
             lastError = r.error;

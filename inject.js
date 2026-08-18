@@ -10,6 +10,12 @@
 
   const URL_PATTERN = "/list_dosya_evraklar.ajx";
 
+  // Vatandas portali (vatandas.uyap.gov.tr) evrak sekmesi acildiginda bu ucu cagirir.
+  // Avukat portalindeki list_dosya_evraklar.ajx'in muadili DEGILDIR: cevabinda evrak
+  // listesi tasimaz (liste DOM agacina span[evrak_id] olarak basilir). Bizim icin
+  // degerli olan REQUEST BODY'sidir: ana dosyanin dosyaId'sini ve yargiTuru'nu tasir.
+  const VATANDAS_PATTERN = "/dosya_evrak_bilgileri_brd.ajx";
+
   // === RESPONSE PARSING ===
   function captureFromText(text) {
     if (!text) return;
@@ -55,6 +61,47 @@
     return null;
   }
 
+  // Vatandas portali: REQUEST BODY'den dosyaId + yargiTuru yakala.
+  // download_document_brd.uyap her ikisini de zorunlu ister.
+  function captureVatandasCtx(body) {
+    try {
+      let dosyaId = null, yargiTuru = null;
+      if (typeof body === "string" && body.length) {
+        const t = body.trim();
+        if (t.startsWith("{") || t.startsWith("[")) {
+          try {
+            const obj = JSON.parse(t);
+            if (obj) {
+              if (obj.dosyaId != null) dosyaId = String(obj.dosyaId);
+              if (obj.yargiTuru != null) yargiTuru = String(obj.yargiTuru);
+            }
+          } catch (_) {}
+        }
+        if (dosyaId == null || yargiTuru == null) {
+          try {
+            const params = new URLSearchParams(body);
+            if (dosyaId == null && params.get("dosyaId") != null) dosyaId = params.get("dosyaId");
+            if (yargiTuru == null && params.get("yargiTuru") != null) yargiTuru = params.get("yargiTuru");
+          } catch (_) {}
+        }
+      } else if (typeof FormData !== "undefined" && body instanceof FormData) {
+        if (body.get("dosyaId") != null) dosyaId = String(body.get("dosyaId"));
+        if (body.get("yargiTuru") != null) yargiTuru = String(body.get("yargiTuru"));
+      } else if (typeof URLSearchParams !== "undefined" && body instanceof URLSearchParams) {
+        dosyaId = body.get("dosyaId");
+        yargiTuru = body.get("yargiTuru");
+      }
+      if (dosyaId || yargiTuru) {
+        const onceki = window.__uyapVatandasCtx || {};
+        window.__uyapVatandasCtx = {
+          dosyaId: dosyaId || onceki.dosyaId || null,
+          yargiTuru: yargiTuru || onceki.yargiTuru || null
+        };
+        window.__uyapVatandasCtxAt = Date.now();
+      }
+    } catch (_) {}
+  }
+
   function captureBodyDosyaId(body) {
     try {
       const id = parseBodyForDosyaId(body);
@@ -77,6 +124,10 @@
 
   XMLHttpRequest.prototype.send = function (body) {
     const xhr = this;
+    if (xhr.__uyapUrl && xhr.__uyapUrl.indexOf(VATANDAS_PATTERN) !== -1) {
+      captureVatandasCtx(body);
+    }
+
     if (xhr.__uyapUrl && xhr.__uyapUrl.indexOf(URL_PATTERN) !== -1) {
       // REQUEST BODY'den dosyaId
       captureBodyDosyaId(body);
@@ -108,6 +159,10 @@
     const url = typeof input === "string"
       ? input
       : (input && (input.url || String(input))) || "";
+
+    if (url && url.indexOf(VATANDAS_PATTERN) !== -1) {
+      try { if (init && init.body != null) captureVatandasCtx(init.body); } catch (_) {}
+    }
 
     if (url && url.indexOf(URL_PATTERN) !== -1) {
       // REQUEST BODY'den dosyaId — once init.body, sonra Request.body (ReadableStream ise atla)

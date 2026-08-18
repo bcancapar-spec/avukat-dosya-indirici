@@ -41,6 +41,262 @@
     };
   }
 
+  // ==========================================================================
+  // VATANDAS PORTALI (vatandas.uyap.gov.tr) DESTEGI
+  // --------------------------------------------------------------------------
+  // Avukat portalindan uc temel farki vardir; her biri saha testinde ogrenildi:
+  //
+  //  1) EVRAK LISTESI AJX CEVABINDA DEGIL, DOM'DADIR.
+  //     list_dosya_evraklar.ajx muadili yoktur. Evrak sekmesi acilip agac
+  //     genisletildiginde her evrak DOM'a <span evrak_id="..."> olarak basilir.
+  //
+  //  2) AGAC AYNI EVRAGI BIRDEN COK KEZ CIZER.
+  //     Ayni evrak hem "Dosyaya Eklenen Son 20 Evrak" dalinda hem "Tum Evraklar"
+  //     altindaki tur klasorlerinde tekrar gorunur. Olcumde 520 benzersiz evrak
+  //     DOM'a 3094 span olarak basilmisti. Bu yuzden evrak_id ile TEKILLESTIRME
+  //     sarttir; aksi halde ayni evrak defalarca inip sayim sisirilir.
+  //
+  //  3) EVRAGI ONIZLEME UCUNDAN INDIRMEYIN — SESSIZ VERI KAYBI VERIR.
+  //     view_document_brd.uyap?mimeType=StyleReport&... onizleme icindir ve buyuk
+  //     evraklarda dosya yerine 116 baytlik su METNI dondurur:
+  //       "Goruntulemek istediginiz evrakin boyutu cok buyuk! Lutfen evraki
+  //        sisteminize kaydederek goruntuleyiniz."
+  //     HTTP 200 dondugu icin hata gibi gorunmez. Saha olcumunde 520 evragin
+  //     ~%29'u bu sekilde sessizce kaybolmustu.
+  //     DOGRUSU: download_document_brd.uyap — portalin kendi indirme ucu.
+  //     Orijinal dosyayi (udf/pdf/tiff) Content-Disposition ile birlikte verir,
+  //     boyut siniri yoktur, StyleReport render'indan gecmez.
+  // ==========================================================================
+
+  function isVatandasPortal() {
+    try { return /(^|\.)vatandas\.uyap\.gov\.tr$/i.test(window.location.hostname); }
+    catch (_) { return false; }
+  }
+
+  // dosyaId + yargiTuru cozumleme.
+  // Oncelik: inject.js'in dosya_evrak_bilgileri_brd.ajx REQUEST BODY'sinden
+  // yakaladigi context. Yoksa acik onizleme iframe'inin URL'inden turet.
+  function resolveVatandasCtx() {
+    const c = window.__uyapVatandasCtx || {};
+    let dosyaId = c.dosyaId || null;
+    let yargiTuru = c.yargiTuru || null;
+
+    if (!dosyaId || !yargiTuru) {
+      try {
+        const f = document.getElementById("onizleiframe");
+        if (f && f.contentWindow) {
+          const href = f.contentWindow.location.href;
+          if (href && href.indexOf("view_document_brd.uyap") !== -1) {
+            const u = new URL(href);
+            dosyaId = dosyaId || u.searchParams.get("dosyaId");
+            yargiTuru = yargiTuru || u.searchParams.get("yargiTuru");
+          }
+        }
+      } catch (_) {}
+    }
+    return { dosyaId, yargiTuru };
+  }
+
+  // "Reddiyat Makbuzu 30/07/2026" -> { ad: "Reddiyat Makbuzu", tarih: "30/07/2026" }
+  function splitVatandasBaslik(raw) {
+    const t = String(raw || "").replace(/\s+/g, " ").trim();
+    const m = t.match(/^(.*?)\s*(\d{1,2}[.\/-]\d{1,2}[.\/-]\d{4})\s*$/);
+    if (m) return { ad: m[1].trim() || "evrak", tarih: m[2] };
+    return { ad: t || "evrak", tarih: "" };
+  }
+
+  function getVatandasCaseTitle() {
+    // Modal basligi ornegi: "2026/104 - Denizli 2. Asliye Ticaret Mahkemesi - Hukuk Dava Dosyasi"
+    const adaylar = [".modal.in .modal-title", ".modal-title", "h4.modal-title", ".modal-header h4"];
+    for (const sel of adaylar) {
+      const els = document.querySelectorAll(sel);
+      for (let i = 0; i < els.length; i++) {
+        const t = String(els[i].textContent || "").replace(/\s+/g, " ").trim();
+        if (t && /\d{4}\s*\/\s*\d+/.test(t)) return t;
+      }
+    }
+    return "";
+  }
+
+  // Bir ek evrak dugumunun ana evragini bul.
+  // Vatandas agacinda ek evraklar, ana evragin <li>'sinin altindaki ic <ul>'de
+  // "Ek 1", "Ek 2" ... etiketiyle durur; tarih ve anlamli ad tasimazlar.
+  // Ana evrak = bir ust <li>'nin kendi span[evrak_id]'si.
+  function findVatandasParentSpan(sp) {
+    try {
+      const li = sp.closest("li");
+      if (!li || !li.parentElement) return null;
+      const ustLi = li.parentElement.closest("li");
+      if (!ustLi) return null;
+      const ustSpan = ustLi.querySelector("span[evrak_id]");
+      if (!ustSpan) return null;
+      if (ustSpan.getAttribute("evrak_id") === sp.getAttribute("evrak_id")) return null;
+      return ustSpan;
+    } catch (_) { return null; }
+  }
+
+  const EK_ETIKET = /^Ek\s*\d+$/i;
+
+  // DOM agacindan benzersiz evrak listesi uret.
+  function buildVatandasList() {
+    const ctx = resolveVatandasCtx();
+    const spans = document.querySelectorAll("span[evrak_id]");
+    const gorulen = new Set();
+    const items = [];
+    let order = 0;
+
+    spans.forEach((sp) => {
+      const evrakId = sp.getAttribute("evrak_id");
+      if (!evrakId || gorulen.has(evrakId)) return;   // <- tekillestirme (bkz. fark #2)
+      gorulen.add(evrakId);
+
+      const hamEtiket = String(sp.textContent || "").replace(/\s+/g, " ").trim();
+      let parcali = splitVatandasBaslik(hamEtiket);
+      let isEk = false;
+      let anaEvrakId = null;
+      let sira = null;
+
+      // Ek evrak ise ana evraktan ad + tarih miras al; yoksa dosya adlari
+      // "Ek_1", "Ek_2" seklinde anlamsiz cikar ve hangi evraga ait oldugu kaybolur.
+      if (EK_ETIKET.test(hamEtiket)) {
+        const ana = findVatandasParentSpan(sp);
+        if (ana) {
+          const anaParcali = splitVatandasBaslik(ana.textContent);
+          isEk = true;
+          anaEvrakId = ana.getAttribute("evrak_id");
+          const n = hamEtiket.match(/(\d+)/);
+          sira = n ? Number(n[1]) : null;
+          parcali = {
+            ad: anaParcali.ad + " - " + hamEtiket,
+            tarih: anaParcali.tarih
+          };
+        }
+      }
+
+      const d = parseTrDate(parcali.tarih);
+      items.push({
+        rawText: hamEtiket,
+        name: parcali.ad,
+        dateStr: d.dateStr,
+        sortKey: d.sortKey,
+        hasDate: d.hasDate,
+        domOrder: order++,
+        evrakId: String(evrakId),
+        dosyaId: ctx.dosyaId ? String(ctx.dosyaId) : null,
+        yargiTuru: ctx.yargiTuru ? String(ctx.yargiTuru) : null,
+        parentKey: "",
+        isEk: isEk,
+        anaEvrakId: anaEvrakId,
+        sira: sira,
+        itemData: {}
+      });
+    });
+
+    // Once ana evraklar tarihe gore; her ana evragin ekleri hemen ardinda sira ile.
+    const anaSirasi = new Map();
+    items.forEach(function (it) {
+      if (!it.isEk) anaSirasi.set(it.evrakId, it);
+    });
+    function grupAnahtari(it) {
+      const kok = it.isEk && it.anaEvrakId && anaSirasi.has(it.anaEvrakId)
+        ? anaSirasi.get(it.anaEvrakId) : it;
+      return kok;
+    }
+    items.sort((a, b) => {
+      const ka = grupAnahtari(a), kb = grupAnahtari(b);
+      if (ka !== kb) {
+        if (ka.hasDate && kb.hasDate && ka.sortKey !== kb.sortKey) return ka.sortKey < kb.sortKey ? -1 : 1;
+        if (ka.hasDate !== kb.hasDate) return ka.hasDate ? -1 : 1;
+        return ka.domOrder - kb.domOrder;
+      }
+      // ayni grup: ana once, sonra ekler sira'ya gore
+      if (a.isEk !== b.isEk) return a.isEk ? 1 : -1;
+      const sa = a.sira != null ? a.sira : 999999;
+      const sb = b.sira != null ? b.sira : 999999;
+      if (sa !== sb) return sa - sb;
+      return a.domOrder - b.domOrder;
+    });
+
+    return { items: items, ctx: ctx };
+  }
+
+  function buildVatandasDownloadUrl(evrakId, dosyaId, yargiTuru) {
+    const base = window.location.origin + "/main/jsp/download_document_brd.uyap";
+    const params = new URLSearchParams();
+    if (evrakId != null) params.set("evrakId", String(evrakId));
+    if (dosyaId != null) params.set("dosyaId", String(dosyaId));
+    if (yargiTuru != null) params.set("yargiTuru", String(yargiTuru));
+    return base + "?" + params.toString();
+  }
+
+  // Content-Disposition dosya adindan uzanti cikar (vatandas portali orijinal
+  // dosyayi verdigi icin en guvenilir kaynak budur; UDF'i octet-stream'den ayirir).
+  function extFromDisposition(cd) {
+    if (!cd) return null;
+    const m = String(cd).match(/filename\*?=(?:UTF-8''|")?([^";]+)/i);
+    if (!m) return null;
+    let ad = "";
+    try { ad = decodeURIComponent(m[1].replace(/"+$/, "")); } catch (_) { ad = m[1]; }
+    const nokta = ad.lastIndexOf(".");
+    if (nokta < 0 || nokta < ad.length - 6) return null;
+    const e = ad.slice(nokta + 1).toLowerCase().replace(/[^a-z0-9]/g, "");
+    return e || null;
+  }
+
+  const VATANDAS_EXT_MIME = {
+    pdf: "application/pdf",
+    udf: "application/octet-stream",
+    tif: "image/tiff", tiff: "image/tiff",
+    jpg: "image/jpeg", jpeg: "image/jpeg",
+    png: "image/png",
+    doc: "application/msword",
+    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    zip: "application/zip",
+    xml: "application/xml",
+    eyp: "application/octet-stream"
+  };
+
+  async function fetchVatandasEvrak(evrakId, dosyaId, yargiTuru, timeoutMs) {
+    const url = buildVatandasDownloadUrl(evrakId, dosyaId, yargiTuru);
+    const ctrl = new AbortController();
+    const timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || 30000);
+    try {
+      const resp = await fetch(url, {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+        signal: ctrl.signal,
+        headers: { "Accept": "*/*" }
+      });
+      if (!resp.ok) return { ok: false, error: "HTTP " + resp.status, url: url };
+
+      const ct = resp.headers.get("content-type") || "";
+      const cd = resp.headers.get("content-disposition") || "";
+      const buf = await resp.arrayBuffer();
+
+      // Sessiz kayip kalkani: kucuk / HTML cevaplari belge sayma.
+      if (buf.byteLength < 64) return { ok: false, error: "Bos cevap (64 bayttan kucuk)", url: url };
+      if (/text\/html/i.test(ct)) return { ok: false, error: "Cevap HTML (oturum dustu veya yetki yok)", url: url };
+
+      let ext = extFromDisposition(cd);
+      if (!ext) {
+        const bilinen = detectMimeAndExt(ct);
+        ext = bilinen ? bilinen.ext : "udf";
+      }
+      const mime = VATANDAS_EXT_MIME[ext] || "application/octet-stream";
+
+      const b64 = arrayBufferToBase64(buf);
+      if (!b64 || b64.length < 50) return { ok: false, error: "Base64 uretilemedi", url: url };
+
+      return { ok: true, base64: b64, mimeType: mime, ext: ext, url: url };
+    } catch (e) {
+      if (e && e.name === "AbortError") return { ok: false, error: "timeout", url: url };
+      return { ok: false, error: String((e && e.message) || e), url: url };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   async function waitForEvrakData(timeoutMs = 3000) {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
@@ -333,6 +589,20 @@
   async function __uyapFetchEvrakImpl(evrakId, dosyaId, opts) {
     opts = opts || {};
     const timeoutMs = opts.timeoutMs || 30000;
+
+    // Vatandas portali kendi indirme ucunu kullanir (download_document_brd.uyap).
+    // Onizleme ucu (view_document_brd.uyap) buyuk evraklarda dosya yerine uyari
+    // metni dondurdugu icin BURADA KULLANILMAZ — bkz. vatandas blogu, fark #3.
+    if (isVatandasPortal()) {
+      const vctx = resolveVatandasCtx();
+      return await fetchVatandasEvrak(
+        evrakId,
+        dosyaId || vctx.dosyaId,
+        opts.yargiTuru || vctx.yargiTuru,
+        timeoutMs
+      );
+    }
+
     const url = buildViewDocUrl(evrakId, dosyaId);
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -415,7 +685,10 @@
     const reqId = msg.reqId;
     let result;
     try {
-      result = await __uyapFetchEvrakImpl(msg.evrakId, msg.dosyaId, { timeoutMs: msg.timeoutMs });
+      result = await __uyapFetchEvrakImpl(msg.evrakId, msg.dosyaId, {
+        timeoutMs: msg.timeoutMs,
+        yargiTuru: msg.yargiTuru
+      });
     } catch (e) {
       result = { ok: false, error: String((e && e.message) || e) };
     }
@@ -436,6 +709,46 @@
 
   window.__uyapMainList = async function () {
     try {
+      // === VATANDAS PORTALI YOLU ===
+      // Liste AJX cevabindan degil, DOM agacindan (span[evrak_id]) uretilir.
+      if (isVatandasPortal()) {
+        const v = buildVatandasList();
+        if (!v.items.length) {
+          return {
+            ok: false,
+            error:
+              "Evrak bulunamadi. Lutfen dosyayi acip 'Evrak' sekmesine gecin ve " +
+              "agactaki 'Tum Evraklar' dugumunu genisletin, sonra tekrar listeleyin."
+          };
+        }
+        if (!v.ctx.dosyaId || !v.ctx.yargiTuru) {
+          return {
+            ok: false,
+            error:
+              "dosyaId/yargiTuru saptanamadi. 'Evrak' sekmesini bir kez yeniden acin " +
+              "(uzanti bu bilgiyi dosya_evrak_bilgileri_brd.ajx istegi sirasinda yakalar)."
+          };
+        }
+
+        v.items.forEach(function (it, i) { it.index = i + 1; });
+
+        const vTitle = getVatandasCaseTitle();
+        const vFolder = sanitizeFilename(vTitle || "vatandas_dosya");
+        return {
+          ok: true,
+          caseTitle: vTitle || "Vatandas Dosyasi",
+          folder: vFolder,
+          missingId: v.items.filter(function (e) { return !e.evrakId; }).length,
+          anaCount: v.items.filter(function (e) { return !e.isEk; }).length,
+          ekCount: v.items.filter(function (e) { return e.isEk; }).length,
+          parentKeys: [],
+          canonicalDosyaId: v.ctx.dosyaId,
+          canonicalDosyaIdCaptured: !!v.ctx.dosyaId,
+          portal: "vatandas",
+          items: v.items
+        };
+      }
+
       let data = await waitForEvrakData(3000);
       if (!data) {
         const direct = await fetchEvrakListDirect();
